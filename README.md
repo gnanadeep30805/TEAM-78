@@ -4,41 +4,41 @@
 
 Healthcare systems worldwide face **critical gaps** that directly impact patient outcomes and accessibility:
 
-* ❌ **30–50% misdiagnosis rate** due to limited consultation time and lack of early triage
-* ❌ **Severe doctor shortages**, especially in rural and underserved regions
-* ❌ **Language and communication barriers** between patients and healthcare providers
-* ❌ Overcrowded hospitals and **unnecessary ER visits** for mild or moderate conditions
-* ❌ Lack of instant, reliable **symptom assessment** for patients before seeking care
+*  **30–50% misdiagnosis rate** due to limited consultation time and lack of early triage
+*  **Severe doctor shortages**, especially in rural and underserved regions
+*  **Language and communication barriers** between patients and healthcare providers
+*  Overcrowded hospitals and **unnecessary ER visits** for mild or moderate conditions
+*  Lack of instant, reliable **symptom assessment** for patients before seeking care
 
 These challenges result in delayed treatment, increased costs, patient anxiety, and strain on medical professionals.
 
 ---
 
-## 💡 Solution Overview
+## Solution Overview
 
 **Doctorly** is a **patient-first AI healthcare assistant** inspired by platforms like *DxGPT*, designed to act as a **virtual doctor-level triage and diagnostic support system**.
 
 Doctorly does **not redirect patients away** with generic advice like *"go to a doctor"*. Instead, it:
 
-* ✅ Responds **as a doctor**, using medical reasoning
-* ✅ Performs **AI-based symptom checking**
-* ✅ Uses **structured diagnostic logic** (DxGPT-style)
-* ✅ Communicates **politely, clearly, and reassuringly**
-* ✅ Supports **voice input** for accessibility
+*  Responds **as a doctor**, using medical reasoning
+*  Performs **AI-based symptom checking**
+*  Uses **structured diagnostic logic** (DxGPT-style)
+*  Communicates **politely, clearly, and reassuringly**
+*  Supports **voice input** for accessibility
 
 The goal is to provide **instant medical guidance**, reduce unnecessary hospital visits, and empower patients with clarity.
 
 ---
 
-## 🧠 Key Features
+##  Key Features
 
-### 👤 Patient Dashboard
+###  Patient Dashboard
 
 * Central landing page for patients
 * Clean and minimal UI
 * Dedicated button to access AI Health Assistant
 
-### 🤖 AI Health Assistant (DxGPT v2 Style)
+###  AI Health Assistant (DxGPT v2 Style)
 
 * Doctor-like conversational behavior
 * Structured medical reasoning output:
@@ -49,25 +49,25 @@ The goal is to provide **instant medical guidance**, reduce unnecessary hospital
 * Polite and empathetic tone
 * No unsafe or dismissive responses
 
-### 🎙 Voice Command Support
+### Voice Command Support
 
 * Speech-to-text using browser SpeechRecognition API
 * Allows patients to speak symptoms instead of typing
 
-### 🩺 Symptom Checker
+### Symptom Checker
 
 * Dedicated symptom input flow
 * Accepts multiple symptoms (e.g., fever, cough, headache)
 * Generates diagnosis-style responses
 
-### 🔗 Seamless Navigation
+###  Seamless Navigation
 
 * AI page connected to Patient Dashboard
 * Back button for easy navigation
 
 ---
 
-## 🏗️ Tech Stack
+##  Tech Stack
 
 | Layer       | Technology                                    |
 | ----------- | --------------------------------------------- |
@@ -91,20 +91,6 @@ Doctorly/
 
 ---
 
-## 🔄 Application Flow
-
-1. Patient opens **Patient Dashboard**
-2. Clicks **“Open AI Health Assistant”**
-3. AI greets patient politely
-4. Patient:
-
-   * Types symptoms OR
-   * Uses voice command OR
-   * Uses Symptom Checker
-5. AI responds like a doctor with reasoning
-6. Patient can return using **Back to Dashboard** button
-
----
 
 ## 🔒 Ethical & Safety Design
 
