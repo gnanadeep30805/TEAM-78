@@ -1,0 +1,137 @@
+<!-- ================= DOCTORLY - AI CHAT PAGE ================= -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Doctorly AI Assistant</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .cyber-border {
+            background: linear-gradient(45deg, #0f766e 0%, #2dd4bf 50%, #0f766e 100%);
+            padding: 2px;
+            border-radius: 1rem;
+        }
+        .neon-glow {
+            box-shadow: 0 0 25px rgba(16, 185, 129, 0.4);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 min-h-screen flex items-center justify-center p-5">
+
+    <div class="cyber-border neon-glow w-full max-w-2xl rounded-2xl">
+        <div class="bg-gray-900 p-6 rounded-2xl flex flex-col h-[90vh]">
+
+            <!-- Back Button -->
+            <div class="mb-4">
+                <button onclick="window.location.href='doctorly-patient.html'" 
+                        class="bg-teal-500 hover:bg-teal-600 text-white px-4 py-2 rounded-xl font-semibold">
+                    ← Back to Dashboard
+                </button>
+            </div>
+
+            <!-- Header -->
+            <h1 class="text-3xl font-bold text-center bg-gradient-to-r from-teal-400 to-cyan-500 bg-clip-text text-transparent mb-5">
+                Doctorly AI Health Assistant
+            </h1>
+
+            <!-- Chat Window -->
+            <div id="chatBox" class="flex-1 overflow-y-auto bg-gray-800 p-4 rounded-xl space-y-4 border border-teal-500/20">
+                <div class="text-teal-300">🤖 AI: Hello! I'm here to help you. How are you feeling today?</div>
+            </div>
+
+            <!-- Symptom Checker Button -->
+            <button onclick="openSymptomChecker()" class="bg-cyan-600 hover:bg-cyan-700 text-white w-full py-3 rounded-xl mt-4">
+                Symptom Checker
+            </button>
+
+            <!-- Voice + Input Box -->
+            <div class="flex items-center mt-4">
+                <input id="userInput" class="flex-1 bg-gray-800 text-white px-4 py-3 rounded-xl border border-teal-500/30" placeholder="Type your message..." />
+
+                <button onclick="startVoice()" class="ml-3 bg-teal-500 hover:bg-teal-600 p-3 rounded-xl">
+                    🎤
+                </button>
+
+                <button onclick="sendMessage()" class="ml-3 bg-cyan-500 hover:bg-cyan-600 p-3 rounded-xl text-white font-bold">
+                    ➤
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+<script>
+// ---------- Chat Message Handling ----------
+function appendMessage(role, text) {
+    const box = document.getElementById("chatBox");
+    const msg = document.createElement("div");
+    msg.className = role === "user" ? "text-white text-right" : "text-teal-300";
+    msg.textContent = (role === "user" ? "You: " : "🤖 AI: ") + text;
+    box.appendChild(msg);
+    box.scrollTop = box.scrollHeight;
+}
+
+function sendMessage() {
+    let text = document.getElementById("userInput").value.trim();
+    if (!text) return;
+
+    appendMessage("user", text);
+    document.getElementById("userInput").value = "";
+
+    generateAIResponse(text);
+}
+
+// ---------- AI Response Logic (DxGPT-Style Medical Reasoning) ----------
+function generateAIResponse(input) {
+    input = input.toLowerCase();
+
+    let diagnosis = "";
+    let advice = "";
+
+    if (input.includes("fever")) {
+        diagnosis = "Your symptoms are consistent with a febrile condition, commonly caused by viral infections like flu or mild bacterial infections.";
+        advice = "Stay hydrated, monitor your temperature, and rest. Seek help if severe.";
+    } else if (input.includes("cough") || input.includes("cold") || input.includes("sore throat")) {
+        diagnosis = "These symptoms may suggest an upper respiratory infection, often viral in nature.";
+        advice = "Warm fluids, steam inhalation, and rest help. See doctor if it persists.";
+    } else if (input.includes("headache")) {
+        diagnosis = "This could be a tension headache, dehydration headache, or migraine.";
+        advice = "Drink water, rest in a quiet environment.";
+    } else if (input.includes("stomach") || input.includes("vomit") || input.includes("diarrhea")) {
+        diagnosis = "You may be experiencing gastric irritation or mild infection.";
+        advice = "Avoid heavy meals, stay hydrated, consider ORS if needed.";
+    } else {
+        diagnosis = "I understand your concern.";
+        advice = "Please describe your symptoms in more detail for accurate guidance.";
+    }
+
+    const finalResponse = `Here is what I understand:\n\n${diagnosis}\n\nRecommended Steps:\n${advice}`;
+    setTimeout(() => appendMessage("ai", finalResponse), 600);
+}
+
+// ---------- Voice Input ----------
+function startVoice() {
+    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+    recognition.lang = "en-US";
+    recognition.start();
+
+    recognition.onresult = function (event) {
+        const text = event.results[0][0].transcript;
+        appendMessage("user", text);
+        generateAIResponse(text);
+    };
+}
+
+// ---------- Symptom Checker ----------
+function openSymptomChecker() {
+    const symptoms = prompt("Enter your symptoms (Example: fever, cough, headache)");
+    if (!symptoms) return;
+
+    appendMessage("user", symptoms);
+    generateAIResponse(symptoms);
+}
+</script>
+
+</body>
+</html>

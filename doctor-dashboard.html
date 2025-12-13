@@ -1,0 +1,427 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DOCTORLY MD - Complete System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/peerjs@1.4.7/dist/peerjs.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --medical-primary: #0EA5E9;
+            --medical-secondary: #0284C7;
+            --medical-accent: #F43F5E;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #F8FAFC;
+        }
+
+        .medical-card {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 1px 3px rgba(14, 165, 233, 0.12);
+            transition: all 0.3s ease;
+        }
+
+        .video-container {
+            position: relative;
+            background: #f0fdfa;
+            border-radius: 1rem;
+            overflow: hidden;
+        }
+
+        .video-label {
+            position: absolute;
+            bottom: 8px;
+            left: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.875rem;
+        }
+
+        .major-problem {
+            animation: glow 1.5s infinite;
+            border: 2px solid #F43F5E;
+        }
+
+        .consultation-active {
+            background-color: #f0f9ff;
+            border: 2px solid var(--medical-primary);
+        }
+
+        @keyframes glow {
+            0% { box-shadow: 0 0 5px #F43F5E; }
+            50% { box-shadow: 0 0 20px #F43F5E; }
+            100% { box-shadow: 0 0 5px #F43F5E; }
+        }
+
+        .priority-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body class="min-h-screen text-slate-800 p-8">
+    <!-- Vital Signs Header -->
+    <div class="medical-card p-4 mb-6 flex justify-between items-center">
+        <div class="flex gap-8">
+            <div>
+                <p class="text-xs text-gray-500">Heart Rate</p>
+                <p class="font-bold"><span id="heartRate">---</span> BPM</p>
+            </div>
+            <div>
+                <p class="text-xs text-gray-500">Blood Pressure</p>
+                <p class="font-bold"><span id="bloodPressure">---/---</span> mmHg</p>
+            </div>
+            <div>
+                <p class="text-xs text-gray-500">Stress Level</p>
+                <p class="font-bold"><span id="stressLevel">---</span></p>
+            </div>
+        </div>
+        <button class="medical-card px-4 py-2 bg-[var(--medical-primary)] text-white hover:bg-[var(--medical-secondary)]"
+                onclick="toggleVitalMonitoring()"
+                id="monitorBtn">
+            Start Monitoring
+        </button>
+    </div>
+
+    <!-- Main Content -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Patient List -->
+        <div class="medical-card p-4">
+            <h2 class="text-lg font-semibold mb-4">Active Patients</h2>
+            <div class="space-y-3" id="patientList">
+                <div class="medical-card p-3 cursor-pointer hover:bg-gray-50 major-problem"
+                     onclick="selectPatient('sarah', event)">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <p class="font-semibold">Sarah Johnson</p>
+                            <p class="text-sm text-gray-500">Chest Pain, Difficulty Breathing</p>
+                        </div>
+                        <span class="priority-indicator bg-[var(--medical-accent)]"></span>
+                    </div>
+                </div>
+                <div class="medical-card p-3 cursor-pointer hover:bg-gray-50"
+                     onclick="selectPatient('michael', event)">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <p class="font-semibold">Michael Chen</p>
+                            <p class="text-sm text-gray-500">Headache, Fatigue</p>
+                        </div>
+                        <span class="priority-indicator bg-gray-300"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Consultation Area -->
+        <div class="medical-card p-4 md:col-span-2">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-semibold">Live Consultation</h2>
+                <div class="flex items-center gap-2">
+                    <div class="w-2 h-2 bg-red-500 rounded-full" id="connectionIndicator"></div>
+                    <span id="connectionStatus">Disconnected</span>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="video-container aspect-video">
+                    <video id="localVideo" autoplay muted class="w-full h-full object-cover"></video>
+                    <div class="video-label">You</div>
+                </div>
+                <div class="video-container aspect-video">
+                    <video id="remoteVideo" autoplay class="w-full h-full object-cover"></video>
+                    <div class="video-label" id="patientNameLabel">Patient</div>
+                </div>
+            </div>
+            <div class="mt-4 grid grid-cols-2 gap-4">
+                <button class="medical-card p-3 bg-[var(--medical-primary)] text-white hover:bg-[var(--medical-secondary)]"
+                        onclick="startConsultation()"
+                        id="startBtn">
+                    Start Consultation
+                </button>
+                <button class="medical-card p-3 bg-gray-100 hover:bg-gray-200"
+                        onclick="endConsultation()"
+                        id="endBtn">
+                    End Consultation
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Recommendations -->
+    <div class="medical-card p-4 mt-6">
+        <h2 class="text-lg font-semibold mb-4">AI Medical Assistant</h2>
+        <div id="aiRecommendations" class="text-gray-500 space-y-3">
+            <div class="medical-card p-3">
+                Select a patient to get AI recommendations...
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Patient Data
+        const patients = [
+            {
+                id: 'sarah',
+                name: 'Sarah Johnson',
+                symptoms: ['Chest Pain', 'Difficulty Breathing'],
+                priority: 'high'
+            },
+            {
+                id: 'michael',
+                name: 'Michael Chen',
+                symptoms: ['Headache', 'Fatigue'],
+                priority: 'medium'
+            }
+        ];
+
+        // PeerJS and WebRTC Variables
+        let peer = null;
+        let localStream = null;
+        let currentCall = null;
+        let currentPatient = null;
+
+        // Vital Monitoring System
+        let isMonitoring = false;
+        let vitalInterval;
+
+        // Initialize PeerJS
+        async function initializePeer() {
+            peer = new Peer(`doctor-${Date.now()}`, {
+                host: '0.peerjs.com',
+                port: 443,
+                secure: true
+            });
+
+            peer.on('open', (id) => {
+                console.log('Doctor peer ready with ID:', id);
+            });
+
+            peer.on('call', async call => {
+                try {
+                    localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                    document.getElementById('localVideo').srcObject = localStream;
+                    
+                    call.answer(localStream);
+                    setupCall(call);
+                    
+                    currentPatient = patients.find(p => p.id === call.peer);
+                    updateConnectionStatus(true);
+                } catch (error) {
+                    console.error('Error answering call:', error);
+                    alert('Error accessing media devices');
+                }
+            });
+        }
+
+        // Start consultation
+        async function startConsultation() {
+            if (!currentPatient) {
+                alert('Please select a patient first!');
+                return;
+            }
+
+            try {
+                localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                document.getElementById('localVideo').srcObject = localStream;
+
+                const call = peer.call(currentPatient.id, localStream);
+                setupCall(call);
+                updateConnectionStatus(true);
+            } catch (error) {
+                console.error('Error starting call:', error);
+                alert('Error accessing media devices');
+            }
+        }
+
+        // Handle call setup
+        function setupCall(call) {
+            currentCall = call;
+
+            call.on('stream', remoteStream => {
+                document.getElementById('remoteVideo').srcObject = remoteStream;
+                document.getElementById('patientNameLabel').textContent = currentPatient?.name || 'Patient';
+            });
+
+            call.on('close', endConsultation);
+            call.on('error', endConsultation);
+        }
+
+        // End consultation
+        function endConsultation() {
+            if (currentCall) {
+                currentCall.close();
+                currentCall = null;
+            }
+            
+            if (localStream) {
+                localStream.getTracks().forEach(track => track.stop());
+                document.getElementById('localVideo').srcObject = null;
+                localStream = null;
+            }
+            
+            document.getElementById('remoteVideo').srcObject = null;
+            updateConnectionStatus(false);
+            currentPatient = null;
+        }
+
+        // Update UI status
+        function updateConnectionStatus(connected) {
+            const indicator = document.getElementById('connectionIndicator');
+            const status = document.getElementById('connectionStatus');
+            
+            if (connected) {
+                indicator.style.backgroundColor = '#10B981';
+                status.textContent = 'Connected';
+                document.getElementById('startBtn').disabled = true;
+                document.getElementById('endBtn').disabled = false;
+            } else {
+                indicator.style.backgroundColor = '#EF4444';
+                status.textContent = 'Disconnected';
+                document.getElementById('startBtn').disabled = false;
+                document.getElementById('endBtn').disabled = true;
+                document.getElementById('patientNameLabel').textContent = 'Patient';
+            }
+        }
+
+        // Vital Monitoring System
+        function toggleVitalMonitoring() {
+            const btn = document.getElementById('monitorBtn');
+            if (!isMonitoring) {
+                isMonitoring = true;
+                btn.textContent = 'Stop Monitoring';
+                btn.classList.replace('bg-[var(--medical-primary)]', 'bg-[var(--medical-accent)]');
+                
+                vitalInterval = setInterval(() => {
+                    document.getElementById('heartRate').textContent = 
+                        Math.floor(60 + Math.random() * 40);
+                    document.getElementById('bloodPressure').textContent = 
+                        `${110 + Math.floor(Math.random() * 20)}/${70 + Math.floor(Math.random() * 15)}`;
+                    document.getElementById('stressLevel').textContent = 
+                        ['Low', 'Moderate', 'High'][Math.floor(Math.random() * 3)];
+                }, 2000);
+            } else {
+                isMonitoring = false;
+                clearInterval(vitalInterval);
+                btn.textContent = 'Start Monitoring';
+                btn.classList.replace('bg-[var(--medical-accent)]', 'bg-[var(--medical-primary)]');
+                document.getElementById('heartRate').textContent = '---';
+                document.getElementById('bloodPressure').textContent = '---/---';
+                document.getElementById('stressLevel').textContent = '---';
+            }
+        }
+
+        // Select Patient
+        function selectPatient(patientId, event) {
+            const patient = patients.find(p => p.id === patientId);
+            if (!patient) return;
+
+            currentPatient = patient;
+            document.querySelectorAll('#patientList > div').forEach(el => {
+                el.classList.remove('consultation-active', 'major-problem');
+            });
+            
+            event.currentTarget.classList.add('consultation-active');
+            if (patient.priority === 'high') {
+                event.currentTarget.classList.add('major-problem');
+            }
+            
+            generateAIRecommendations(patient);
+        }
+
+        // AI Recommendations
+        function generateAIRecommendations(patient) {
+            const recommendations = document.getElementById('aiRecommendations');
+            let aiSuggestions = [];
+
+            if (patient.symptoms.includes('Chest Pain')) {
+                aiSuggestions.push(
+                    "Urgent: Recommend ECG and cardiac enzymes test",
+                    "Consider aspirin 325mg if no contraindications",
+                    "Monitor for signs of cardiac ischemia"
+                );
+            }
+
+            if (patient.symptoms.includes('Difficulty Breathing')) {
+                aiSuggestions.push(
+                    "Check oxygen saturation levels",
+                    "Consider chest X-ray and ABG analysis",
+                    "Evaluate for possible pulmonary embolism"
+                );
+            }
+
+            if (patient.symptoms.includes('Headache')) {
+                aiSuggestions.push(
+                    "Assess for neurological deficits",
+                    "Check blood pressure and consider CT scan",
+                    "Recommend NSAIDs for pain management"
+                );
+            }
+
+            if (patient.symptoms.includes('Fatigue')) {
+                aiSuggestions.push(
+                    "Check thyroid function tests",
+                    "Evaluate hemoglobin and iron levels",
+                    "Assess sleep patterns and stress levels"
+                );
+            }
+
+            recommendations.innerHTML = aiSuggestions.length > 0
+                ? aiSuggestions.map(r => `
+                    <div class="medical-card p-3">✅ ${r}</div>
+                `).join('')
+                : '<div class="medical-card p-3">No specific recommendations</div>';
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            initializePeer();
+            updateConnectionStatus(false);
+        });
+    </script>
+<!-- Code injected by live-server -->
+<script>
+	// <![CDATA[  <-- For SVG support
+	if ('WebSocket' in window) {
+		(function () {
+			function refreshCSS() {
+				var sheets = [].slice.call(document.getElementsByTagName("link"));
+				var head = document.getElementsByTagName("head")[0];
+				for (var i = 0; i < sheets.length; ++i) {
+					var elem = sheets[i];
+					var parent = elem.parentElement || head;
+					parent.removeChild(elem);
+					var rel = elem.rel;
+					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
+						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
+						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
+					}
+					parent.appendChild(elem);
+				}
+			}
+			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
+			var address = protocol + window.location.host + window.location.pathname + '/ws';
+			var socket = new WebSocket(address);
+			socket.onmessage = function (msg) {
+				if (msg.data == 'reload') window.location.reload();
+				else if (msg.data == 'refreshcss') refreshCSS();
+			};
+			if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
+				console.log('Live reload enabled.');
+				sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
+			}
+		})();
+	}
+	else {
+		console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
+	}
+	// ]]>
+</script>
+</body>
+</html>
