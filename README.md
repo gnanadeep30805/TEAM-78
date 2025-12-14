@@ -78,3 +78,29 @@ It does NOT provide medical diagnosis or prescriptions.
 
 ## Project Structure
 
+Doctorly_GenAI_Project/
+│
+├── backend/
+│ ├── main.py
+│ ├── auth/
+│ │ └── otp.py
+│ ├── agents/
+│ │ └── agent_router.py
+│ └── appointments/
+│ └── router.py
+│
+├── frontend/
+│ ├── src/
+│ │ ├── App.jsx
+│ │ ├── pages/
+│ │ │ ├── Login.jsx
+│ │ │ ├── Dashboard.jsx
+│ │ │ ├── Doctors.jsx
+│ │ │ ├── Waiting.jsx
+│ │ │ └── VideoCall.jsx
+│ │ └── components/
+│ │ └── ChatWindow.jsx
+│ └── index.html
+│
+└── README.md
+
